@@ -1,0 +1,6 @@
+{
+   "private": true,
+   "name": "la-carte",
+   "workspaces": ["client", "server"],
+   "scripts": {}
+}

@@ -1,0 +1,22 @@
+scalar DateTime
+
+type Query {
+  pokemons: [Pokemon!]!
+}
+
+type Pokemon {
+  id: ID!
+  lastModified: DateTime!
+  disappearTime: DateTime!
+  pokemonId: Int!
+  form: Int
+  cp: Int
+  cpMultiplier: Float
+  gender: Int
+  height: Float
+  individualAttack: Int
+  individualDefense: Int
+  individualStamina: Int
+  latitude: Float!
+  longitude: Float!
+}
