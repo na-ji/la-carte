@@ -5,7 +5,7 @@ import * as TypeORM from 'typeorm';
 import * as TypeGraphQL from 'type-graphql';
 
 import { PokemonResolver } from './resolvers/pokemon-resolver';
-import { Pokemon } from './models/pokemon';
+import { Pokemon } from './entities/pokemon';
 
 // register 3rd party IOC container
 TypeORM.useContainer(Container);
@@ -23,7 +23,7 @@ async function bootstrap() {
       entities: [Pokemon],
       logger: 'advanced-console',
       logging: 'all',
-      maxQueryExecutionTime: 100,
+      maxQueryExecutionTime: 10,
       cache: true
     });
 

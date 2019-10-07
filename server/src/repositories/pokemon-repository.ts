@@ -1,10 +1,10 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { Pokemon } from './pokemon';
-import { GetPokemonsParameters } from '../resolvers/pokemon-resolver';
+import { Pokemon } from '../entities/pokemon';
+import { GetActivePokemonsInput } from '../resolvers/pokemon-resolver';
 
 @EntityRepository(Pokemon)
 export class PokemonRepository extends Repository<Pokemon> {
-  findCurrentPokemon(parameters: GetPokemonsParameters): Promise<Pokemon[]> {
+  findActivePokemon(parameters: GetActivePokemonsInput): Promise<Pokemon[]> {
     const {
       southWestLatitude,
       northEastLatitude,

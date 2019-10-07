@@ -1,11 +1,11 @@
 import { Resolver, Query, Field, Float, Arg, InputType } from 'type-graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 
-import { PokemonRepository } from '../models/pokemon-repository';
-import { Pokemon } from '../models/pokemon';
+import { PokemonRepository } from '../repositories/pokemon-repository';
+import { Pokemon } from '../entities/pokemon';
 
 @InputType()
-export class GetPokemonsParameters {
+export class GetActivePokemonsInput {
   @Field(type => Float)
   southWestLatitude: number;
 
@@ -28,8 +28,8 @@ export class PokemonResolver {
 
   @Query(returns => [Pokemon])
   pokemons(
-    @Arg('parameters') parameters: GetPokemonsParameters
+    @Arg('parameters') parameters: GetActivePokemonsInput
   ): Promise<Pokemon[]> {
-    return this.pokemonRepository.findCurrentPokemon(parameters);
+    return this.pokemonRepository.findActivePokemon(parameters);
   }
 }
