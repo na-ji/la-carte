@@ -1,6 +1,18 @@
 {
    "private": true,
    "name": "la-carte",
-   "workspaces": ["client", "server"],
-   "scripts": {}
+   "workspaces": [
+      "client",
+      "server"
+   ],
+   "scripts": {},
+   "prettier": {
+      "singleQuote": true
+   },
+   "devDependencies": {
+      "prettier": "^1.18.2"
+   },
+   "dependencies": {
+      "dotenv": "^8.1.0"
+   }
 }
