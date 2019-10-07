@@ -49,6 +49,14 @@ export class Pokestop {
   })
   image?: string;
 
+  getCleanImage(): string | null {
+    if (this.image) {
+      return this.image.replace('http://', '//');
+    }
+
+    return this.image;
+  }
+
   @Field({ nullable: true })
   @Column({ name: 'lure_expiration', type: 'datetime', nullable: true })
   @Index('pokestop_lure_expiration')

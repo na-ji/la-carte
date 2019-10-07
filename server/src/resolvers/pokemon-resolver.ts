@@ -3,9 +3,9 @@ import { InjectRepository } from 'typeorm-typedi-extensions';
 
 import { PokemonRepository } from '../repositories/pokemon-repository';
 import { Pokemon } from '../entities';
-import { GetActivePokemonsInput } from './types/pokemon-inputs';
+import { GetActivePokemonsArgs } from './types/pokemon-args';
 
-@Resolver(Pokemon)
+@Resolver(of => Pokemon)
 export class PokemonResolver {
   constructor(
     @InjectRepository(Pokemon)
@@ -13,9 +13,7 @@ export class PokemonResolver {
   ) {}
 
   @Query(returns => [Pokemon])
-  pokemons(
-    @Arg('parameters') parameters: GetActivePokemonsInput
-  ): Promise<Pokemon[]> {
-    return this.pokemonRepository.findActivePokemon(parameters);
+  pokemons(@Arg('args') args: GetActivePokemonsArgs): Promise<Pokemon[]> {
+    return this.pokemonRepository.findActivePokemon(args);
   }
 }

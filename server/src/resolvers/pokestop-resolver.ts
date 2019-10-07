@@ -1,21 +1,31 @@
-import { Arg, Query, Resolver } from 'type-graphql';
+import {
+  Arg,
+  FieldResolver,
+  Query,
+  Resolver,
+  ResolverInterface,
+  Root
+} from 'type-graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 
 import { Pokestop } from '../entities';
 import { PokestopRepository } from '../repositories/pokestop-repository';
-import { LocationAwareInput } from './types/common-inputs';
+import { GetPokestopArgs } from './types/pokestop-args';
 
-@Resolver(Pokestop)
-export class PokestopResolver {
+@Resolver(of => Pokestop)
+export class PokestopResolver implements ResolverInterface<Pokestop> {
   constructor(
     @InjectRepository(Pokestop)
     private readonly pokestopRepository: PokestopRepository
   ) {}
 
   @Query(returns => [Pokestop])
-  pokestops(
-    @Arg('parameters') parameters: LocationAwareInput
-  ): Promise<Pokestop[]> {
-    return this.pokestopRepository.findPokestop(parameters);
+  pokestops(@Arg('args') args: GetPokestopArgs): Promise<Pokestop[]> {
+    return this.pokestopRepository.findPokestop(args);
+  }
+
+  @FieldResolver()
+  image(@Root() pokestop: Pokestop): string | null {
+    return pokestop.getCleanImage();
   }
 }
