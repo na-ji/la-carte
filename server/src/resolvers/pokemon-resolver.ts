@@ -1,23 +1,9 @@
-import { Resolver, Query, Field, Float, Arg, InputType } from 'type-graphql';
+import { Arg, Query, Resolver } from 'type-graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 
 import { PokemonRepository } from '../repositories/pokemon-repository';
-import { Pokemon } from '../entities/pokemon';
-
-@InputType()
-export class GetActivePokemonsInput {
-  @Field(type => Float)
-  southWestLatitude: number;
-
-  @Field(type => Float)
-  southWestLongitude: number;
-
-  @Field(type => Float)
-  northEastLatitude: number;
-
-  @Field(type => Float)
-  northEastLongitude: number;
-}
+import { Pokemon } from '../entities';
+import { GetActivePokemonsInput } from './types/pokemon-inputs';
 
 @Resolver(Pokemon)
 export class PokemonResolver {

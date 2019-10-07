@@ -4,8 +4,8 @@ import { Container } from 'typedi';
 import * as TypeORM from 'typeorm';
 import * as TypeGraphQL from 'type-graphql';
 
-import { PokemonResolver } from './resolvers/pokemon-resolver';
-import { Pokemon } from './entities/pokemon';
+import resolvers from './resolvers';
+import entities from './entities';
 
 // register 3rd party IOC container
 TypeORM.useContainer(Container);
@@ -20,7 +20,7 @@ async function bootstrap() {
       password: process.env.DB_PASS,
       port: 3306,
       host: process.env.DB_HOST,
-      entities: [Pokemon],
+      entities,
       logger: 'advanced-console',
       logging: 'all',
       maxQueryExecutionTime: 10,
@@ -29,12 +29,12 @@ async function bootstrap() {
 
     // build TypeGraphQL executable schema
     const schema = await TypeGraphQL.buildSchema({
-      resolvers: [PokemonResolver],
+      resolvers,
       container: Container
     });
 
     // Create GraphQL server
-    const server = new ApolloServer({ schema });
+    const server = new ApolloServer({ schema, tracing: true });
 
     // Start the server
     const { url } = await server.listen(4000);

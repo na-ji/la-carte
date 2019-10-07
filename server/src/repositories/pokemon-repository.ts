@@ -1,6 +1,6 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { Pokemon } from '../entities/pokemon';
-import { GetActivePokemonsInput } from '../resolvers/pokemon-resolver';
+import { GetActivePokemonsInput } from '../resolvers/types/pokemon-inputs';
 
 @EntityRepository(Pokemon)
 export class PokemonRepository extends Repository<Pokemon> {
