@@ -1,5 +1,13 @@
 import { Field, ID, ObjectType } from 'type-graphql';
-import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  Index,
+  OneToOne,
+  JoinColumn
+} from 'typeorm';
+import { Quest } from './quest';
 
 @Entity()
 @ObjectType()
@@ -93,4 +101,9 @@ export class Pokestop {
     nullable: true
   })
   incidentGruntType?: number;
+
+  @Field(type => Quest, { nullable: true })
+  @OneToOne(type => Quest)
+  @JoinColumn({ name: 'pokestop_id', referencedColumnName: 'id' })
+  quest?: Quest;
 }

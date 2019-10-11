@@ -1,5 +1,5 @@
 import { InputType } from 'type-graphql';
-import { LocationAwareArgs } from './common-args';
+import { BoudingBoxArgs } from './common-args';
 
 @InputType()
-export class GetPokestopArgs extends LocationAwareArgs {}
+export class GetPokestopArgs extends BoudingBoxArgs {}

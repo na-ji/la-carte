@@ -4,8 +4,10 @@ import {
   Query,
   Resolver,
   ResolverInterface,
-  Root
+  Root,
+  Info
 } from 'type-graphql';
+import { GraphQLResolveInfo } from 'graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 
 import { Pokestop } from '../entities';
@@ -20,8 +22,11 @@ export class PokestopResolver implements ResolverInterface<Pokestop> {
   ) {}
 
   @Query(returns => [Pokestop])
-  pokestops(@Arg('args') args: GetPokestopArgs): Promise<Pokestop[]> {
-    return this.pokestopRepository.findPokestop(args);
+  pokestops(
+    @Arg('args') args: GetPokestopArgs,
+    @Info() requestInfo: GraphQLResolveInfo
+  ): Promise<Pokestop[]> {
+    return this.pokestopRepository.findPokestop(args, requestInfo);
   }
 
   @FieldResolver()

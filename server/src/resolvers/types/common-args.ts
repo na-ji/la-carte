@@ -1,7 +1,7 @@
 import { Field, Float, InputType } from 'type-graphql';
 
 @InputType()
-export class LocationAwareArgs {
+export class BoudingBoxArgs {
   @Field(type => Float)
   southWestLatitude: number;
 
