@@ -5,7 +5,7 @@
   "private": true,
   "devDependencies": {
     "ts-node": "8.4.1",
-    "typescript": "3.6.3"
+    "typescript": "3.6.4"
   },
   "scripts": {
     "start": "ts-node -r dotenv/config ./src/index.ts dotenv_config_path=../.env"
