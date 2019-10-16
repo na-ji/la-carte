@@ -13,7 +13,7 @@ export class Pokemon {
     width: 20,
     unsigned: true
   })
-  id: bigint;
+  id: string;
 
   @Field(type => ID)
   @Column({
@@ -23,7 +23,7 @@ export class Pokemon {
     unsigned: true
   })
   @Index('pokemon_spawnpoint_id')
-  spawnpointId: bigint;
+  spawnpointId: string;
 
   @Field()
   @Column({ name: 'pokemon_id', type: 'smallint', width: 6 })
