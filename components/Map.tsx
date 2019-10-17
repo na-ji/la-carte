@@ -1,56 +1,28 @@
 import { useQuery } from '@apollo/react-hooks';
 import { NetworkStatus } from 'apollo-client';
-import gql from 'graphql-tag';
 
 import ErrorMessage from './ErrorMessage';
+import { RAW_DATA_QUERY } from '../lib/queries';
 
-export const POKESTOPS_QUERY = gql`
-  query pokestops($args: GetPokestopArgs!) {
-    pokestops(args: $args) {
-      id
-      enabled
-      latitude
-      longitude
-      lastModified
-      name
-      image
-      lureExpiration
-      activeFortModifier
-      lastUpdated
-      incidentStart
-      incidentExpiration
-      incidentGruntType
-      quest {
-        id
-        type
-        timestamp
-        stardust
-        pokemonId
-        rewardType
-        itemId
-        itemAmount
-        target
-        condition
-        reward
-        template
-        task
-      }
-    }
-  }
-`;
+const coords = {
+  southWestLatitude: 48.8237907492343,
+  southWestLongitude: 2.690577507019043,
+  northEastLatitude: 48.848846202308756,
+  northEastLongitude: 2.7505731582641606
+};
 
-export const pokestopsQueryVars = {
-  args: {
-    southWestLatitude: 48.8237907492343,
-    southWestLongitude: 2.690577507019043,
-    northEastLatitude: 48.848846202308756,
-    northEastLongitude: 2.7505731582641606
+const rawDataQueryVars = {
+  pokemonArgs: {
+    ...coords
+  },
+  pokestopArgs: {
+    ...coords
   }
 };
 
 export default function Map() {
-  const { loading, error, data, networkStatus } = useQuery(POKESTOPS_QUERY, {
-    variables: pokestopsQueryVars,
+  const { loading, error, data, networkStatus } = useQuery(RAW_DATA_QUERY, {
+    variables: rawDataQueryVars,
     // Setting this value to true will make the component rerender when
     // the "networkStatus" changes, so we are able to know if it is fetching
     // more data
