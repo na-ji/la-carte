@@ -1,92 +1,101 @@
 import { useQuery } from '@apollo/react-hooks';
-import { NetworkStatus } from 'apollo-client';
+import { useEffect, useRef, useState } from 'react';
+import L, { Map } from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import CanvasIconLayer from 'leaflet-canvas-marker/src/plugin/leaflet.canvas-markers';
 
-import ErrorMessage from './ErrorMessage';
 import { RAW_DATA_QUERY } from '../lib/queries';
 
-const coords = {
-  southWestLatitude: 48.8237907492343,
-  southWestLongitude: 2.690577507019043,
-  northEastLatitude: 48.848846202308756,
-  northEastLongitude: 2.7505731582641606
-};
-
-const rawDataQueryVars = {
+const rawDataQueryVars = coords => ({
   pokemonArgs: {
     ...coords
   },
   pokestopArgs: {
     ...coords
   }
-};
+});
 
-export default function Map() {
-  const { loading, error, data, networkStatus } = useQuery(RAW_DATA_QUERY, {
-    variables: rawDataQueryVars,
-    // Setting this value to true will make the component rerender when
-    // the "networkStatus" changes, so we are able to know if it is fetching
-    // more data
-    notifyOnNetworkStatusChange: true
+export default function() {
+  const [coords, setCoords] = useState({
+    southWestLatitude: 48.82379,
+    southWestLongitude: 2.69057,
+    northEastLatitude: 48.84884,
+    northEastLongitude: 2.75057
   });
 
-  const loadingMorePosts = networkStatus === NetworkStatus.fetchMore;
+  const { data } = useQuery(RAW_DATA_QUERY, {
+    variables: rawDataQueryVars(coords)
+    //pollInterval: 2000
+  });
 
-  if (error) return <ErrorMessage message="Error loading posts." />;
-  if (loading && !loadingMorePosts) return <div>Loading</div>;
+  const mapRef: { current: Map } = useRef(null);
+  const layerRef = useRef(null);
 
-  const { pokestops } = data;
+  useEffect(() => {
+    mapRef.current = L.map('mapid').setView([48.83959, 2.717067], 16);
 
-  return (
-    <section>
-      <ul>
-        {pokestops.map((pokestop, index) => (
-          <li key={pokestop.id}>
-            <div>
-              <span>
-                {index + 1}. {pokestop.name}
-              </span>
-            </div>
-          </li>
-        ))}
-      </ul>
-      <style jsx>{`
-        section {
-          padding-bottom: 20px;
-        }
-        li {
-          display: block;
-          margin-bottom: 10px;
-        }
-        div {
-          align-items: center;
-          display: flex;
-        }
-        a {
-          font-size: 14px;
-          margin-right: 10px;
-          text-decoration: none;
-          padding-bottom: 0;
-          border: 0;
-        }
-        span {
-          font-size: 14px;
-          margin-right: 5px;
-        }
-        ul {
-          margin: 0;
-          padding: 0;
-        }
-        button:before {
-          align-self: center;
-          border-style: solid;
-          border-width: 6px 4px 0 4px;
-          border-color: #ffffff transparent transparent transparent;
-          content: '';
-          height: 0;
-          margin-right: 5px;
-          width: 0;
-        }
-      `}</style>
-    </section>
-  );
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18
+    }).addTo(mapRef.current);
+
+    const updateBounds = () => {
+      setCoords({
+        southWestLatitude: parseFloat(
+          mapRef.current
+            .getBounds()
+            .getSouthWest()
+            .lat.toFixed(5)
+        ),
+        southWestLongitude: parseFloat(
+          mapRef.current
+            .getBounds()
+            .getSouthWest()
+            .lng.toFixed(5)
+        ),
+        northEastLatitude: parseFloat(
+          mapRef.current
+            .getBounds()
+            .getNorthEast()
+            .lat.toFixed(5)
+        ),
+        northEastLongitude: parseFloat(
+          mapRef.current
+            .getBounds()
+            .getNorthEast()
+            .lng.toFixed(5)
+        )
+      });
+    };
+
+    mapRef.current.on('resize moveend zoomend', updateBounds);
+
+    layerRef.current = CanvasIconLayer({}).addTo(mapRef.current);
+  }, []);
+
+  let pokestops = [];
+  if (typeof data !== 'undefined') {
+    pokestops = data.pokestops;
+  }
+
+  const upscaleModifier = 1;
+  const PokestopIcon = L.icon({
+    iconUrl: 'images/pokestop/stop.png',
+    iconSize: [32 * upscaleModifier, 32 * upscaleModifier],
+    iconAnchor: [16 * upscaleModifier, 32 * upscaleModifier],
+    popupAnchor: [0, -16 * upscaleModifier]
+  });
+
+  useEffect(() => {
+    layerRef.current.clearLayers();
+
+    pokestops.forEach(pokestop => {
+      layerRef.current.addMarker(
+        L.marker([pokestop.latitude, pokestop.longitude], {
+          icon: PokestopIcon
+        })
+      );
+    });
+  }, [pokestops]);
+
+  return <div key="map" id="mapid" style={{ height: '100%' }} />;
 }
