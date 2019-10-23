@@ -8,8 +8,13 @@ import fetch from 'isomorphic-unfetch';
 
 let apolloClient = null;
 
-const port = parseInt(process.env.PORT) || 3000;
-const host = process.env.HOST || 'localhost';
+let port = process.env.PORT || '3000';
+let host = process.env.HOST || 'localhost';
+
+if (typeof window !== 'undefined') {
+  port = window.location.port;
+  host = window.location.hostname;
+}
 
 /**
  * Creates and provides the apolloContext
@@ -130,7 +135,7 @@ function createApolloClient(initialState = {}) {
   return new ApolloClient({
     ssrMode: typeof window === 'undefined', // Disables forceFetch on the server (so queries are only run once)
     link: new HttpLink({
-      uri: `http://${host}:${port}/graphql`, // Server URL (must be absolute)
+      uri: `//${host}:${port}/graphql`, // Server URL (must be absolute)
       credentials: 'same-origin', // Additional fetch() options like `credentials` or `headers`
       fetch
     }),
