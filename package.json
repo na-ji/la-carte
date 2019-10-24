@@ -26,6 +26,7 @@
     "leaflet": "^1.5.1",
     "leaflet-canvas-marker": "na-ji/Leaflet.Canvas-Markers",
     "next": "9.1.1",
+    "rbush": "^3.0.1",
     "react": "16.10.2",
     "react-dom": "16.10.2",
     "react-leaflet": "2.4.0",

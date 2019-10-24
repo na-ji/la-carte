@@ -50,7 +50,8 @@ export class PokestopRepository extends Repository<Pokestop> {
       queryBuilder.leftJoinAndSelect(
         'pokestop.quest',
         'quest',
-        "DATE(from_unixtime(quest.timestamp, '%Y-%m-%d')) = CURDATE()"
+        // "DATE(from_unixtime(quest.timestamp, '%Y-%m-%d')) = CURDATE()"
+        "DATE(from_unixtime(quest.timestamp, '%Y-%m-%d')) = '2019-10-22'"
       );
     }
 

@@ -1,23 +1,26 @@
-import { useQuery } from '@apollo/react-hooks';
 import { MutableRefObject, useRef, Fragment, useEffect } from 'react';
 import 'leaflet/dist/leaflet.css';
 import { Map, TileLayer } from 'react-leaflet';
 import { useDebouncedCallback } from 'use-debounce';
 import { useSelector, useDispatch } from 'react-redux';
+import { createSelector } from 'reselect';
 
-import { RAW_DATA_QUERY } from '../lib/queries';
 import CanvasLayer from './CanvasLayer';
 import PokestopMarker from './PokestopMarker';
 import { setViewConfig } from '../lib/stores/view-config/actions';
+import { MAP } from '../lib/stores/map/action-types';
 
-const rawDataQueryVars = coords => ({
-  pokemonArgs: {
-    ...coords
-  },
-  pokestopArgs: {
-    ...coords
-  }
-});
+const selectPokestops = createSelector(
+  ({ map }) => map.pokestopsTree,
+  ({ viewConfig }) => viewConfig.bounds,
+  (pokestopsTree, bounds) =>
+    pokestopsTree.search({
+      minX: bounds.southWestLatitude,
+      minY: bounds.southWestLongitude,
+      maxX: bounds.northEastLatitude,
+      maxY: bounds.northEastLongitude
+    })
+);
 
 export default function() {
   const viewConfig = useSelector(state => state.viewConfig);
@@ -31,19 +34,15 @@ export default function() {
 
   const [debouncedSetViewConfig] = useDebouncedCallback(payload => {
     dispatch(setViewConfig(payload));
-  }, 500);
+  }, 100);
 
-  const { data } = useQuery(RAW_DATA_QUERY, {
-    variables: rawDataQueryVars(viewConfig.bounds)
-    //pollInterval: 2000
-  });
+  useEffect(() => {
+    dispatch({ type: MAP.FETCH_DATA });
+  }, []);
 
   const mapRef: MutableRefObject<Map> = useRef(null);
 
-  let pokestops = [];
-  if (typeof data !== 'undefined') {
-    pokestops = data.pokestops;
-  }
+  const pokestops = useSelector(selectPokestops);
 
   const updateBounds = () => {
     const mapElement = mapRef.current.leafletElement;

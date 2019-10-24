@@ -5,11 +5,14 @@ import storage from 'redux-persist/lib/storage';
 import createSagaMiddleware from 'redux-saga';
 
 import reducers from './stores/root-reducer';
+import sagas from './stores/root-saga';
+import MapTransform from './stores/map/persist-transformers';
 
 const persistConfig = {
   key: 'la-carte',
   storage,
-  whitelist: ['viewConfig'] // place to select which state you want to persist
+  whitelist: ['viewConfig', 'map'],
+  transforms: [MapTransform]
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers);
@@ -22,6 +25,7 @@ export function initializeStore() {
     composeWithDevTools(applyMiddleware(saga))
   );
   let persistor = persistStore(store);
+  saga.run(sagas);
 
   return { store, persistor };
 }
