@@ -7,8 +7,8 @@ class CanvasLayer extends MapLayer {
       ...this.getOptions(props),
       debug: false
     });
-    debugger;
     this.contextValue = { ...props.leaflet, layerContainer: el };
+
     return el;
   }
 }

@@ -3,7 +3,6 @@ import gql from 'graphql-tag';
 export const POKESTOP_FIELDS = gql`
   fragment pokestopFields on Pokestop {
     id
-    enabled
     latitude
     longitude
     lastModified
@@ -30,7 +29,6 @@ export const QUEST_FIELDS = gql`
     itemAmount
     target
     condition
-    reward
     template
     task
   }

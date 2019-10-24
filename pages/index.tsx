@@ -2,6 +2,7 @@ import dynamic from 'next/dynamic';
 
 import App from '../components/App';
 import { withApollo } from '../lib/apollo';
+import { withRedux } from '../lib/redux';
 
 const Map = dynamic(() => import('../components/Map'), {
   ssr: false
@@ -13,7 +14,4 @@ const IndexPage = () => (
   </App>
 );
 
-export default withApollo(IndexPage, {
-  // Disable apollo ssr fetching in favour of automatic static optimization
-  ssr: false
-});
+export default withRedux(withApollo(IndexPage));

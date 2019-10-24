@@ -1,45 +1,27 @@
-import { applyMiddleware, createStore, Store } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension/developmentOnly';
+import { persistReducer, persistStore } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 import createSagaMiddleware from 'redux-saga';
 
-import rootReducer from './rootReducer';
-import rootSaga from './rootSaga';
+import reducers from './stores/root-reducer';
 
-const bindMiddleware = middleware => {
-  if (process.env.NODE_ENV !== 'production') {
-    const { composeWithDevTools } = require('redux-devtools-extension');
-    return composeWithDevTools(applyMiddleware(...middleware));
-  }
-
-  return applyMiddleware(...middleware);
+const persistConfig = {
+  key: 'la-carte',
+  storage,
+  whitelist: ['viewConfig'] // place to select which state you want to persist
 };
 
-interface MyStore extends Store {
-  sagaTask: any;
-}
+const persistedReducer = persistReducer(persistConfig, reducers);
 
-function configureStore(preloadedState) {
-  /**
-   * Recreate the stdChannel (saga middleware) with every context.
-   */
-  const sagaMiddleware = createSagaMiddleware();
+const saga = createSagaMiddleware();
 
-  /**
-   * Since Next.js does server-side rendering, you are REQUIRED to pass
-   * `preloadedState` when creating the store.
-   */
-  const store: MyStore = createStore(
-    rootReducer,
-    preloadedState,
-    bindMiddleware([sagaMiddleware])
+export function initializeStore() {
+  let store = createStore(
+    persistedReducer,
+    composeWithDevTools(applyMiddleware(saga))
   );
+  let persistor = persistStore(store);
 
-  /**
-   * next-redux-saga depends on `sagaTask` being attached to the store.
-   * It is used to await the rootSaga task before sending results to the client.
-   */
-  store.sagaTask = sagaMiddleware.run(rootSaga);
-
-  return store;
+  return { store, persistor };
 }
-
-export default configureStore;

@@ -3,11 +3,12 @@ import { MutableRefObject, useRef, Fragment, useEffect } from 'react';
 import 'leaflet/dist/leaflet.css';
 import { Map, TileLayer } from 'react-leaflet';
 import { useDebouncedCallback } from 'use-debounce';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { RAW_DATA_QUERY } from '../lib/queries';
 import CanvasLayer from './CanvasLayer';
 import PokestopMarker from './PokestopMarker';
-import { useLocalStorage } from '../lib/hooks';
+import { setViewConfig } from '../lib/stores/view-config/actions';
 
 const rawDataQueryVars = coords => ({
   pokemonArgs: {
@@ -19,39 +20,18 @@ const rawDataQueryVars = coords => ({
 });
 
 export default function() {
-  const [viewConfig, setViewConfig] = useLocalStorage('viewConfig', {
-    centerLatitude: 48.83959,
-    centerLongitude: 2.717067,
-    zoom: 16,
-    bounds: {
-      southWestLatitude: 48.82379,
-      southWestLongitude: 2.69057,
-      northEastLatitude: 48.84884,
-      northEastLongitude: 2.75057
-    }
-  });
+  const viewConfig = useSelector(state => state.viewConfig);
+  const dispatch = useDispatch();
 
   const mapProps: MutableRefObject<{}> = useRef({
     center: [viewConfig.centerLatitude, viewConfig.centerLongitude],
     zoom: viewConfig.zoom,
     maxZoom: 19
   });
-  useEffect(() => {
-    mapProps.current = {
-      center: [viewConfig.centerLatitude, viewConfig.centerLongitude],
-      zoom: viewConfig.zoom,
-      maxZoom: 19
-    };
-  }, []);
 
-  const [debouncedSetViewConfig] = useDebouncedCallback(
-    // function
-    value => {
-      setViewConfig(value);
-    },
-    // delay in ms
-    1000
-  );
+  const [debouncedSetViewConfig] = useDebouncedCallback(payload => {
+    dispatch(setViewConfig(payload));
+  }, 500);
 
   const { data } = useQuery(RAW_DATA_QUERY, {
     variables: rawDataQueryVars(viewConfig.bounds)
