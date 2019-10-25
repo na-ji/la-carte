@@ -6,12 +6,19 @@ import {
   withLeaflet
 } from 'react-leaflet';
 import React from 'react';
+import { CanvasLayerContext } from './CanvasLayer';
 
 class CanvasMarker<
   P extends MarkerProps = MarkerProps,
   E extends LeafletMarker = LeafletMarker
 > extends MapLayer<MarkerProps, LeafletMarker> {
   componentDidMount(): void {
+    const { canvasLayerComponent } = this.contextValue as CanvasLayerContext;
+
+    if (!canvasLayerComponent) {
+      throw new Error('CanvasMarker cannot be used outside of a CanvasLayer');
+    }
+
     // @ts-ignore
     this.bindLeafletEvents(this._leafletEvents);
 
@@ -25,6 +32,10 @@ class CanvasMarker<
       // @ts-ignore
       this.layerContainer.addLayer(this.leafletElement);
     }
+  }
+
+  componentWillUnmount(): void {
+    super.componentWillUnmount();
   }
 
   createLeafletElement(props: MarkerProps): LeafletMarker {
@@ -41,8 +52,13 @@ class CanvasMarker<
     ) {
       this.leafletElement.setLatLng(toProps.position);
     }
-    if (toProps.icon !== fromProps.icon) {
-      this.leafletElement.setIcon(toProps.icon);
+    if (
+      JSON.stringify(toProps.icon.options) !==
+      JSON.stringify(fromProps.icon.options)
+    ) {
+      const { canvasLayerComponent } = this.contextValue as CanvasLayerContext;
+      this.leafletElement.options.icon = toProps.icon;
+      canvasLayerComponent.redraw();
     }
     if (toProps.zIndexOffset !== fromProps.zIndexOffset) {
       this.leafletElement.setZIndexOffset(toProps.zIndexOffset);
