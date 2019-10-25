@@ -4,6 +4,9 @@ import { LocationRBush } from '../../location-r-bush';
 
 const MapTransform = createTransform(
   ({ pokestops }: MapState) => {
+    Object.keys(pokestops).forEach(pokestopId => {
+      delete pokestops[pokestopId].quest;
+    });
     return { pokestops };
   },
   (outboundState: MapState): MapState => {
