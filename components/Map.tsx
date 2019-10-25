@@ -3,24 +3,12 @@ import 'leaflet/dist/leaflet.css';
 import { Map, TileLayer } from 'react-leaflet';
 import { useDebouncedCallback } from 'use-debounce';
 import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
 
 import CanvasLayer from './CanvasLayer';
 import PokestopMarker from './PokestopMarker';
 import { setViewConfig } from '../lib/stores/view-config/actions';
 import { MAP } from '../lib/stores/map/action-types';
-
-const selectPokestops = createSelector(
-  ({ map }) => map.pokestopsTree,
-  ({ viewConfig }) => viewConfig.bounds,
-  (pokestopsTree, bounds) =>
-    pokestopsTree.search({
-      minX: bounds.southWestLatitude,
-      minY: bounds.southWestLongitude,
-      maxX: bounds.northEastLatitude,
-      maxY: bounds.northEastLongitude
-    })
-);
+import { pokestopsSelector } from '../lib/stores/map/selectors';
 
 export default function() {
   const viewConfig = useSelector(state => state.viewConfig);
@@ -34,7 +22,7 @@ export default function() {
 
   const [debouncedSetViewConfig] = useDebouncedCallback(payload => {
     dispatch(setViewConfig(payload));
-  }, 100);
+  }, 50);
 
   useEffect(() => {
     dispatch({ type: MAP.FETCH_DATA });
@@ -42,7 +30,7 @@ export default function() {
 
   const mapRef: MutableRefObject<Map> = useRef(null);
 
-  const pokestops = useSelector(selectPokestops);
+  const pokestops = useSelector(pokestopsSelector);
 
   const updateBounds = () => {
     const mapElement = mapRef.current.leafletElement;

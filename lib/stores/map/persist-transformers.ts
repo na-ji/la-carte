@@ -1,5 +1,6 @@
 import { createTransform } from 'redux-persist';
-import { MapState, MyRBush } from './reducers';
+import { MapState } from './reducers';
+import { LocationRBush } from '../../location-r-bush';
 
 const MapTransform = createTransform(
   ({ pokestops }: MapState) => {
@@ -8,7 +9,9 @@ const MapTransform = createTransform(
   (outboundState: MapState): MapState => {
     return {
       ...outboundState,
-      pokestopsTree: new MyRBush().load(Object.values(outboundState.pokestops))
+      pokestopsTree: new LocationRBush().load(
+        Object.values(outboundState.pokestops)
+      )
     };
   },
   { whitelist: ['map'] }

@@ -1,30 +1,11 @@
 import { handleActions } from 'redux-actions';
-import RBush from 'rbush';
 
 import { MAP } from './action-types';
-
-// TODO : to extract
-export class MyRBush extends RBush {
-  toBBox({ latitude, longitude }) {
-    return { minX: latitude, minY: longitude, maxX: latitude, maxY: longitude };
-  }
-
-  compareMinX(a, b) {
-    return a.latitude - b.latitude;
-  }
-
-  compareMinY(a, b) {
-    return a.longitude - b.longitude;
-  }
-
-  load(data): MyRBush {
-    return super.load(data);
-  }
-}
+import { LocationRBush } from '../../location-r-bush';
 
 const initialState = {
   pokestops: {},
-  pokestopsTree: new MyRBush()
+  pokestopsTree: new LocationRBush()
 };
 
 export type MapState = typeof initialState;
@@ -41,12 +22,10 @@ export default handleActions(
         }, {})
       };
 
-      console.log({ pokestops: Object.keys(pokestops).length });
-
       return {
         ...state,
         pokestops,
-        pokestopsTree: new MyRBush().load(Object.values(pokestops))
+        pokestopsTree: new LocationRBush().load(Object.values(pokestops))
       };
     }
   },
