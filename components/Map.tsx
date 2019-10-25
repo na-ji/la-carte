@@ -25,7 +25,7 @@ export default function() {
   }, 50);
 
   useEffect(() => {
-    dispatch({ type: MAP.FETCH_DATA });
+    dispatch({ type: MAP.FETCH_DATA, payload: viewConfig });
   }, []);
 
   const mapRef: MutableRefObject<Map> = useRef(null);

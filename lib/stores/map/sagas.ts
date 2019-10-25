@@ -1,4 +1,4 @@
-import { put, select, takeLatest, call } from '@redux-saga/core/effects';
+import { call, put, takeLatest } from '@redux-saga/core/effects';
 
 import { MAP } from './action-types';
 import { initApolloClient } from '../../apollo';
@@ -27,6 +27,7 @@ function* fetchData({ payload }) {
 
 function* watchFetchData() {
   yield takeLatest(VIEW_CONFIG.SET, fetchData);
+  yield takeLatest(MAP.FETCH_DATA, fetchData);
 }
 
 export default call(watchFetchData);
