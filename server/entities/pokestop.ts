@@ -21,7 +21,7 @@ export class Pokestop {
   })
   id: string;
 
-  @Field(type => ID)
+  @Field()
   @Column({
     type: 'tinyint',
     width: 1

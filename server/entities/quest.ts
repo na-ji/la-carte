@@ -1,5 +1,98 @@
-import { Field, ID, ObjectType } from 'type-graphql';
+import { Field, ID, Int, ObjectType } from 'type-graphql';
 import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
+
+// @ObjectType()
+abstract class ConditionWithPokemonType {
+  // @Field(type => [Int], { name: 'pokemonType' })
+  pokemon_type: number[];
+}
+
+// @ObjectType()
+abstract class ConditionWithPokemonCategory {
+  // @Field({ name: 'categoryName' })
+  category_name: string;
+
+  // @Field(type => [Int], { name: 'pokemonIds' })
+  pokemon_ids: number[];
+}
+
+// @ObjectType()
+abstract class ConditionWithThrowType {
+  // @Field(type => Int, { name: 'throwType' })
+  throw_type: number;
+
+  // @Field()
+  hit: boolean;
+}
+
+// @ObjectType()
+abstract class QuestCondition {
+  // @Field(type => Int)
+  type: number;
+
+  // @Field(type => ConditionWithPokemonType, {
+  //   name: 'withPokemonType',
+  //   nullable: true
+  // })
+  with_pokemon_type?: ConditionWithPokemonType;
+
+  // @Field(type => ConditionWithPokemonCategory, {
+  //   name: 'withPokemonCategory',
+  //   nullable: true
+  // })
+  with_pokemon_category?: ConditionWithPokemonCategory;
+
+  // @Field(type => ConditionWithThrowType, {
+  //   name: 'withThrowType',
+  //   nullable: true
+  // })
+  with_throw_type?: ConditionWithThrowType;
+}
+
+abstract class QuestReward {
+  type: number;
+
+  exp: number;
+
+  item: {
+    item: number;
+    amount: number;
+  };
+
+  stardust: number;
+
+  candy: {
+    pokemon_id: number;
+    amount: number;
+  };
+
+  avatar_template_id: string;
+  quest_template_id: string;
+
+  pokemon_encounter: {
+    pokemon_id: number;
+    use_quest_pokemon_encounter_distribuition: boolean;
+    pokemon_display: {
+      is_shiny: boolean;
+      weather_boosted_value: number;
+      weather_boosted_description: string;
+      gender_value: number;
+      form_value: number;
+      costume_value: number;
+      alignment: number;
+    };
+    is_hidden_ditto: boolean;
+    ditto_display: {
+      is_shiny: boolean;
+      weather_boosted_value: number;
+      weather_boosted_description: string;
+      gender_value: number;
+      form_value: number;
+      costume_value: number;
+      alignment: number;
+    };
+  };
+}
 
 @Entity({ name: 'trs_quest' })
 @ObjectType()
@@ -77,7 +170,6 @@ export class Quest {
   })
   target: number;
 
-  @Field({ nullable: true })
   @Column({
     type: 'varchar',
     name: 'quest_condition',
@@ -86,7 +178,10 @@ export class Quest {
   })
   condition?: string;
 
-  @Field({ nullable: true })
+  getCondition(): QuestCondition[] {
+    return JSON.parse(this.condition);
+  }
+
   @Column({
     type: 'varchar',
     name: 'quest_reward',
@@ -94,6 +189,10 @@ export class Quest {
     nullable: true
   })
   reward?: string;
+
+  getReward(): QuestReward[] {
+    return JSON.parse(this.reward);
+  }
 
   @Field({ nullable: true })
   @Column({
