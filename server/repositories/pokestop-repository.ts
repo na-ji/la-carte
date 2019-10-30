@@ -5,7 +5,7 @@ import { GetPokestopArgs } from '../resolvers/types/pokestop-args';
 import { FieldNode, GraphQLResolveInfo } from 'graphql';
 
 // TODO : to extract
-const queryHasField = (fieldNode: FieldNode, fieldName: string) => {
+export const queryHasField = (fieldNode: FieldNode, fieldName: string) => {
   if (fieldNode.name.value === fieldName) {
     return true;
   }
