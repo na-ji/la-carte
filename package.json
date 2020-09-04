@@ -35,7 +35,7 @@
     "redux-saga": "^1.1.1",
     "reflect-metadata": "^0.1.13",
     "reselect": "^4.0.0",
-    "type-graphql": "^0.17.5",
+    "type-graphql": "^0.17.6",
     "typedi": "^0.8.0",
     "typeorm": "^0.2.19",
     "typeorm-typedi-extensions": "^0.2.3",
